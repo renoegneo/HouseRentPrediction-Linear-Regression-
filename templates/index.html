@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linear Regression Model Dashboard</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;600;700&display=swap");
+
+      :root {
+        --ink: #0d1b2a;
+        --muted: #4c5b64;
+        --accent: #f39c12;
+        --accent-soft: #f7d69a;
+        --card: #ffffff;
+        --wash: #f6f4f1;
+        --teal: #2e8a83;
+        --shadow: 0 24px 60px rgba(13, 27, 42, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at 15% 20%, #fef0d7, transparent 45%),
+          radial-gradient(circle at 80% 0%, #d7f3f1, transparent 40%),
+          linear-gradient(135deg, #fbf8f2 0%, #f1f6f5 100%);
+        min-height: 100vh;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 20px 80px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 24px;
+        align-items: center;
+        margin-bottom: 36px;
+      }
+
+      .hero h1 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        margin: 0 0 12px;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .hero-card {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: grid;
+        gap: 12px;
+        animation: rise 0.6s ease forwards;
+      }
+
+      .metric {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        font-size: 1.1rem;
+        padding: 10px 0;
+        border-bottom: 1px solid #ece7df;
+      }
+
+      .metric:last-child {
+        border-bottom: none;
+      }
+
+      .metric span {
+        font-weight: 700;
+      }
+
+      .section {
+        margin-top: 36px;
+      }
+
+      .section h2 {
+        font-size: 1.6rem;
+        margin-bottom: 14px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        animation: fade 0.7s ease forwards;
+      }
+
+      .grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .chip {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .plot {
+        width: 100%;
+        border-radius: 18px;
+        border: 1px solid #ece7df;
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+
+      label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      input {
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #dcd5cb;
+        font-size: 1rem;
+        font-family: inherit;
+      }
+
+      button {
+        padding: 14px 18px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 10px 20px rgba(46, 138, 131, 0.2);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      .result {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 16px;
+        background: #f0f9f8;
+        border: 1px solid #cfe8e6;
+        display: grid;
+        gap: 6px;
+      }
+
+      .alert {
+        padding: 14px;
+        border-radius: 12px;
+        background: #fff2e0;
+        border: 1px solid #f4c98b;
+        color: #7a3b00;
+        margin-bottom: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #ece7df;
+      }
+
+      th {
+        background: #f8f3ec;
+        position: sticky;
+        top: 0;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <h1>Linear Regression Model Dashboard</h1>
+          <p>
+            This page summarizes the house rent model, highlights the evaluation
+            score, and lets you submit a new sample in the same format as the
+            dataset.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="metric">
+            <div>Test R^2 score</div>
+            <span>{{ r2_score }}</span>
+          </div>
+          <div class="metric">
+            <div>Training split</div>
+            <span>80% train / 20% test</span>
+          </div>
+          <div class="metric">
+            <div>Dataset file</div>
+            <span>House_Rent_Dataset.csv</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="section grid">
+        <div class="card">
+          <h2>Regression Plot</h2>
+          <img
+            class="plot"
+            src="/regression_plot.png"
+            alt="Regression plot"
+          />
+        </div>
+        <div class="card">
+          <h2>Dataset Columns</h2>
+          <p>Full list of columns in the dataset:</p>
+          <div class="chips">
+            {% for col in dataset_columns %}
+            <span class="chip">{{ col }}</span>
+            {% endfor %}
+          </div>
+          <p style="margin-top: 16px; color: var(--muted);">
+            Model features used: Size, BHK, Bathroom, Floor, City, Area Type,
+            Furnishing Status. Other columns were dropped during training.
+          </p>
+        </div>
+      </section>
+
+      <section class="section grid">
+        <div class="card">
+          <h2>Submit a Sample</h2>
+          <p style="margin-bottom: 12px; color: var(--muted);">
+            Fill in the fields below and submit to get a prediction. The request
+            is handled by the model code in test_model.py.
+          </p>
+          {% if errors %}
+          <div class="alert">
+            {% for error in errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <form method="post" action="/predict">
+            <div class="form-grid">
+              <label>
+                Size
+                <input
+                  type="number"
+                  name="size"
+                  placeholder="1100"
+                  value="{{ form_data.get('size', '') }}"
+                  required
+                />
+              </label>
+              <label>
+                BHK
+                <input
+                  type="number"
+                  name="bhk"
+                  placeholder="2"
+                  value="{{ form_data.get('bhk', '') }}"
+                  required
+                />
+              </label>
+              <label>
+                Bathroom
+                <input
+                  type="number"
+                  name="bathroom"
+                  placeholder="2"
+                  value="{{ form_data.get('bathroom', '') }}"
+                  required
+                />
+              </label>
+              <label>
+                Floor
+                <input
+                  type="text"
+                  name="floor"
+                  placeholder="1 out of 3"
+                  value="{{ form_data.get('floor', '') }}"
+                  required
+                />
+              </label>
+              <label>
+                City
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="Kolkata"
+                  value="{{ form_data.get('city', '') }}"
+                  required
+                />
+              </label>
+              <label>
+                Area Type
+                <input
+                  type="text"
+                  name="area_type"
+                  placeholder="Super Area"
+                  value="{{ form_data.get('area_type', '') }}"
+                  required
+                />
+              </label>
+              <label>
+                Furnishing Status
+                <input
+                  type="text"
+                  name="furnishing_status"
+                  placeholder="Semi-Furnished"
+                  value="{{ form_data.get('furnishing_status', '') }}"
+                  required
+                />
+              </label>
+            </div>
+            <button type="submit">Submit</button>
+          </form>
+          {% if prediction is not none %}
+          <div class="result">
+            <div><strong>Predicted Rent:</strong> {{ prediction }}</div>
+            <div><strong>Test R^2:</strong> {{ r2_score }}</div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="card">
+          <h2>Dataset Preview (First 10 Rows)</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  {% for col in dataset_columns %}
+                  <th>{{ col }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in dataset_head %}
+                <tr>
+                  {% for col in dataset_columns %}
+                  <td>{{ row[col] }}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
