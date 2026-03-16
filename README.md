@@ -7,16 +7,14 @@
    cd house-rent-prediction
 
 2. **Создание вирт окружения**
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# или
-venv\Scripts\activate     # Windows
+   python -m venv venv
+   venv\Scripts\activate     # Windows
 
-pip install -r requirements.txt
+   pip install -r requirements.txt
 
 
 Обучение модели:
-python train_model.py
+   python train_model.py
 
 Запуск:
-python app.py
+   python app.py
