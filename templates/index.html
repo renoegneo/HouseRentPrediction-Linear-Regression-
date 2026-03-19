@@ -121,6 +121,11 @@
         font-weight: 600;
         font-size: 0.9rem;
       }
+      .chip.unused {
+        background: #f8d7da;
+        color: #8a1f2d;
+        border: 1px solid #f0b7bd;
+      }
 
       .plot {
         width: 100%;
@@ -283,12 +288,12 @@
           <p>Full list of columns in the dataset:</p>
           <div class="chips">
             {% for col in dataset_columns %}
-            <span class="chip">{{ col }}</span>
+            <span class="chip{% if col in unused_columns %} unused{% endif %}">{{ col }}</span>
             {% endfor %}
           </div>
-          <p style="margin-top: 16px; color: var(--muted);">
-            Model features used: Size, BHK, Bathroom, Floor, City, Area Type,
-            Furnishing Status. Other columns were dropped during training.
+          <p style="margin-top: 16px; color: rgba(255, 94, 54, 0.9); font-size: 1.15rem;">
+            A cleaned view of the dataset is shown below after dropped columns
+            are removed and floor values are split into numeric levels.
           </p>
         </div>
       </section>
@@ -360,16 +365,6 @@
                 />
               </label>
               <label>
-                Area Type
-                <input
-                  type="text"
-                  name="area_type"
-                  placeholder="Super Area"
-                  value="{{ form_data.get('area_type', '') }}"
-                  required
-                />
-              </label>
-              <label>
                 Furnishing Status
                 <input
                   type="text"
@@ -405,6 +400,33 @@
                 {% for row in dataset_head %}
                 <tr>
                   {% for col in dataset_columns %}
+                  <td>{{ row[col] }}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="section grid">
+        <div class="card">
+          <h2>Form-Format Preview (5 Rows)</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  {% for col in model_ready_columns %}
+                  <th>{{ col }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in model_ready_head %}
+                <tr>
+                  {% for col in model_ready_columns %}
                   <td>{{ row[col] }}</td>
                   {% endfor %}
                 </tr>

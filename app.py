@@ -17,6 +17,19 @@ def load_dataset():
 DATASET = load_dataset()
 DATASET_COLUMNS = DATASET.columns.tolist()
 DATASET_HEAD = DATASET.head(10).to_dict(orient="records")
+UNUSED_COLUMNS = [col for col in ["Posted On", "Area Locality", "Floor", "Rent"] if col in DATASET_COLUMNS]
+
+
+def build_model_ready_preview(df):
+    target_columns = ["Size", "BHK", "Bathroom", "Floor", "City", "Furnishing Status"]
+    existing = [col for col in target_columns if col in df.columns]
+    preview = df[existing].dropna()
+    return preview
+
+
+MODEL_READY = build_model_ready_preview(DATASET)
+MODEL_READY_COLUMNS = MODEL_READY.columns.tolist()
+MODEL_READY_HEAD = MODEL_READY.head(5).to_dict(orient="records")
 
 
 def parse_int(value, field_name, errors):
@@ -33,6 +46,9 @@ def index():
         "index.html",
         dataset_columns=DATASET_COLUMNS,
         dataset_head=DATASET_HEAD,
+        model_ready_columns=MODEL_READY_COLUMNS,
+        model_ready_head=MODEL_READY_HEAD,
+        unused_columns=UNUSED_COLUMNS,
         r2_score=round(get_r2_score(), 4),
         prediction=None,
         errors=[],
@@ -48,7 +64,6 @@ def predict():
         "bathroom": request.form.get("bathroom", "").strip(),
         "floor": request.form.get("floor", "").strip(),
         "city": request.form.get("city", "").strip(),
-        "area_type": request.form.get("area_type", "").strip(),
         "furnishing_status": request.form.get("furnishing_status", "").strip(),
     }
 
@@ -60,7 +75,6 @@ def predict():
     for key, label in [
         ("floor", "Floor"),
         ("city", "City"),
-        ("area_type", "Area Type"),
         ("furnishing_status", "Furnishing Status"),
     ]:
         if not form_data[key]:
@@ -74,7 +88,6 @@ def predict():
             "Bathroom": bathroom,
             "Floor": form_data["floor"],
             "City": form_data["city"],
-            "Area Type": form_data["area_type"],
             "Furnishing Status": form_data["furnishing_status"],
         }
         prediction = round(predict_from_input(payload), 2)
@@ -83,6 +96,9 @@ def predict():
         "index.html",
         dataset_columns=DATASET_COLUMNS,
         dataset_head=DATASET_HEAD,
+        model_ready_columns=MODEL_READY_COLUMNS,
+        model_ready_head=MODEL_READY_HEAD,
+        unused_columns=UNUSED_COLUMNS,
         r2_score=round(get_r2_score(), 4),
         prediction=prediction,
         errors=errors,
