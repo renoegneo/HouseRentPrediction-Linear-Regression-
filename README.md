@@ -3,7 +3,7 @@
 
 1. **Клонируйте репозиторий:**
    ```bash
-   git clone https://github.com/your-username/house-rent-prediction.git
+   git clone https://github.com/renoegneo/HouseRentPrediction-Linear-Regression-.git
    cd house-rent-prediction
 
 2. **Создание вирт окружения**
