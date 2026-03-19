@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 Flask==2.3.3
 pandas==2.0.3
 scikit-learn==1.3.0
 joblib==1.3.2
+=======
+Flask==2.3.3
+pandas==2.0.3
+scikit-learn==1.3.0
+joblib==1.3.2
+>>>>>>> 86c1d796fef6e992862f5e9da1105a15bf7152e9
 matplotlib==3.7.2
